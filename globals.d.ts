@@ -3,7 +3,7 @@ declare module 'chai-bignumber';
 declare module 'dirty-chai';
 declare module 'bn.js';
 declare module 'ethereumjs-abi';
-declare module 'es6-promisify';
+declare module 'prompt-confirm';
 
 // HACK: In order to merge the bignumber declaration added by chai-bignumber to the chai Assertion
 // interface we must use `namespace` as the Chai definitelyTyped definition does. Since we otherwise
@@ -63,4 +63,28 @@ declare module 'ethereumjs-util' {
             toBuffer,
             isValidAddress,
           };
+}
+
+// es6-promisify declarations
+declare function promisify(original: any, settings?: any): ((...arg: any[]) => Promise<any>);
+declare module 'es6-promisify' {
+    export = promisify;
+}
+
+// truffle-contract declarations
+declare interface ContractInstance {
+    address: string;
+}
+declare interface ContractFactory {
+    setProvider: (providerObj: any) => void;
+    deployed: () => ContractInstance;
+    at: (address: string) => ContractInstance;
+}
+declare interface Artifact {
+    abi: any;
+    networks: {[networkId: number]: any};
+}
+declare module 'truffle-contract' {
+    function contract(artifacts: Artifact): ContractFactory;
+    export = contract;
 }
