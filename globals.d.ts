@@ -5,6 +5,8 @@ declare module 'bn.js';
 declare module 'ethereumjs-abi';
 declare module 'prompt-confirm';
 
+import * as Web3 from 'web3';
+
 // HACK: In order to merge the bignumber declaration added by chai-bignumber to the chai Assertion
 // interface we must use `namespace` as the Chai definitelyTyped definition does. Since we otherwise
 // disallow `namespace`, we disable tslint for the following.
@@ -76,7 +78,7 @@ declare interface ContractInstance {
     address: string;
 }
 declare interface ContractFactory {
-    setProvider: (providerObj: any) => void;
+    setProvider: (providerObj: Web3.Provider) => void;
     deployed: () => ContractInstance;
     at: (address: string) => ContractInstance;
 }
