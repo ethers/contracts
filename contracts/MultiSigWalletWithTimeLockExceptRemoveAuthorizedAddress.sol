@@ -9,7 +9,7 @@ contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is MultiSigWall
     modifier validRemoveAuthorizedAddressTx(uint transactionId) {
         Transaction storage tx = transactions[transactionId];
         assert(tx.destination == PROXY_CONTRACT);
-        assert(isFunctionRemoveAuthorizedAddress(tx.data));
+        assert(bytes4FromBytes(tx.data) == bytes4(sha3("removeAuthorizedAddress(address)")));
         _;
     }
 
@@ -47,18 +47,23 @@ contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is MultiSigWall
         }
     }
 
-    /// @dev Compares first 4 bytes of byte array to removeAuthorizedAddress function signature.
-    /// @param data Transaction data.
-    /// @return Successful if data is a call to removeAuthorizedAddress.
-    function isFunctionRemoveAuthorizedAddress(bytes data)
+    /// @dev Takes a tightly packed array's first 4 bytes (given its length is sufficient)
+    ///     and pads them to return a proper 'bytes4' type variable
+    /// @param data Transaction data array.
+    /// @return The first 4 bytes of the input array.
+    function bytes4FromBytes(bytes data)
         public
         constant
-        returns (bool)
+        returns (bytes4)
     {
-        bytes4 removeAuthorizedAddressSignature = bytes4(sha3("removeAuthorizedAddress(address)"));
-        for (uint i = 0; i < 4; i++) {
-            assert(data[i] == removeAuthorizedAddressSignature[i]);
+        require(data.length >= 4);
+        
+        bytes4 first4Bytes;
+        
+        assembly {
+            first4Bytes := mul(div(mload(add(data, 0x20)), 0x100000000000000000000000000000000000000000000000000000000), 0x100000000000000000000000000000000000000000000000000000000)
         }
-        return true;
+        
+        return first4Bytes;
     }
 }
