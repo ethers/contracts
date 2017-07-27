@@ -480,17 +480,17 @@ contract Exchange is SafeMath {
         );
     }
 
-    /// @dev Checks if rounding error > 0.1%.
+    /// @dev Checks if integer division produces a rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
-    /// @return Rounding error is present.
+    /// @return Boolean indicating whether rounding error is present.
     function isRoundingError(uint numerator, uint denominator, uint target)
         public
         constant
         returns (bool)
     {
-        return (target < 10**3 && mulmod(target, numerator, denominator) != 0);
+        return (mulmod(target, numerator, denominator) != 0 && getPartialAmount(numerator, denominator, target) >= 1000);
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
