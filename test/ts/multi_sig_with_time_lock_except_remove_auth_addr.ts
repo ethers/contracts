@@ -33,21 +33,14 @@ contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: s
     validDestination = proxy.address;
   });
 
-  describe('isFunctionRemoveAuthorizedAddress', () => {
-    it('should throw if data is not for removeAuthorizedAddress', async () => {
+  describe('bytes4FromBytes', () => {
+    it('should return the first 4 bytes of a byte array of any size', async () => {
       const data = multiSigWrapper.encodeFnArgs('addAuthorizedAddress', PROXY_ABI, [owners[0]]);
-      try {
-        await multiSig.isFunctionRemoveAuthorizedAddress.call(data);
-        throw new Error('isFunctionRemoveAuthorizedAddress succeeded when it should have failed');
-      } catch (err) {
-        testUtil.assertThrow(err);
-      }
-    });
+      const first4Bytes = await multiSig.bytes4FromBytes(data);
 
-    it('should return true if data is for removeAuthorizedAddress', async () => {
-      const data = multiSigWrapper.encodeFnArgs('removeAuthorizedAddress', PROXY_ABI, [owners[0]]);
-      const isFunctionRemoveAuthorizedAddress = await multiSig.isFunctionRemoveAuthorizedAddress.call(data);
-      assert.equal(isFunctionRemoveAuthorizedAddress, true);
+      const expectedFirst4Bytes = data.slice(0, 10);
+      assert.equal(first4Bytes.length, 10);
+      assert.equal(first4Bytes, expectedFirst4Bytes);
     });
   });
 

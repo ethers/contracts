@@ -57,13 +57,13 @@ contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is MultiSigWall
         returns (bytes4)
     {
         require(data.length >= 4);
-        
+
         bytes4 first4Bytes;
-        
+
         assembly {
             first4Bytes := mul(div(mload(add(data, 0x20)), 0x100000000000000000000000000000000000000000000000000000000), 0x100000000000000000000000000000000000000000000000000000000)
         }
-        
+
         return first4Bytes;
     }
 }
