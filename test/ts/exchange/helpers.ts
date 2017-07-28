@@ -79,6 +79,22 @@ contract('Exchange', (accounts: string[]) => {
   });
 
   describe('isRoundingError', () => {
+    it('should return false if the rounding is exactly 1/1000', async () => {
+      const numerator = new BigNumber(1);
+      const denominator = new BigNumber(2);
+      const target = new BigNumber(2001);
+      const isRoundingError = await exchangeWrapper.isRoundingErrorAsync(numerator, denominator, target);
+      assert.equal(isRoundingError, false);
+    });
+
+    it('should return true if rounding error is 2/1000 > 0.1%', async () => {
+      const numerator = new BigNumber(2);
+      const denominator = new BigNumber(3);
+      const target = new BigNumber(1501);
+      const isRoundingError = await exchangeWrapper.isRoundingErrorAsync(numerator, denominator, target);
+      assert.equal(isRoundingError, true);
+    });
+
     it('should return true if there is a rounding error > 0.1%', async () => {
       const numerator = new BigNumber(3);
       const denominator = new BigNumber(7);
